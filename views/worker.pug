@@ -1,0 +1,188 @@
+include mixins
+
+-
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      return `${months[parseInt(parts[1], 10) - 1]} ${parseInt(parts[2], 10)}, ${parts[0]}`;
+    }
+    return dateStr;
+  }
+
+#raw-content-container.raw-form-container(data-doc="worker" data-worker-name=data.workerName data-claim-no=data.claimNo data-app-id=data.appId data-submitted-date=data.submittedDate)
+  
+  //- Intro statement
+  .pdf-intro-statement
+    span.dynamic-text #{data.workerName || '__________________'}
+    |  provided the following updates in relation to their claim:
+
+  //- 1. Return to Work Section
+  +sectionTitle("Return to Work")
+
+  //- RTW Status Box
+  .pdf-box-section
+    .pdf-box-section-label Select one:
+    div(style="display: flex; flex-direction: row; justify-content: flex-start; gap: 4mm; align-items: center; margin-top: 1.5mm; margin-bottom: 1.5mm; flex-wrap: nowrap;")
+      +checkboxRow("I have not missed time from work", data.returnStatus === 'not_missed', "font-size: 10px; gap: 1.5mm;")
+      +checkboxRow("I have not returned to work", data.returnStatus === 'not_returned', "font-size: 10px; gap: 1.5mm;")
+      .pdf-checkbox-row(style="font-size: 10px; gap: 1.5mm;")
+        .pdf-custom-checkbox(class=(data.returnStatus === 'returned') ? 'checked' : '')
+        .pdf-line-field-group(style="margin-top: 0; height: auto; align-items: flex-end; font-size: 10px;")
+          span I returned to work on:
+          +inlineLine(formatDate(data.returnDate), "Date", "width: 24mm;")
+
+  //- RTW Duties Box
+  .pdf-box-section
+    .pdf-box-section-label I am working:
+    div(style="display: flex; flex-direction: row; justify-content: flex-start; gap: 3.5mm; align-items: center; flex-wrap: nowrap; margin-bottom: 3.5mm; margin-top: 1.5mm;")
+      +checkboxRow("Full duties, regular hours", data.workingDuty === 'full_regular', "font-size: 10px; gap: 1.5mm;")
+      +checkboxRow("Full duties, reduced hours", data.workingDuty === 'full_reduced', "font-size: 10px; gap: 1.5mm;")
+      +checkboxRow("Modified duties, regular hours", data.workingDuty === 'modified_regular', "font-size: 10px; gap: 1.5mm;")
+      +checkboxRow("Modified duties, reduced hours", data.workingDuty === 'modified_reduced', "font-size: 10px; gap: 1.5mm;")
+    .pdf-checkbox-row(style="width: 100%; font-size: 10px; gap: 1.5mm;")
+      .pdf-custom-checkbox(class=(data.workingDuty === 'other') ? 'checked' : '')
+      .pdf-line-field-group(style="width: calc(100% - 8mm); margin-top: 0; height: auto; align-items: flex-end; font-size: 10px;")
+        span Other:
+        span.pdf-inline-line(style="flex: 1; text-align: left; padding-left: 2mm;")
+          if data.workingDutyOther
+            span.dynamic-text= data.workingDutyOther
+          else
+            span &nbsp;
+
+  //- RTW comments Box
+  .pdf-box-section
+    .pdf-box-section-label My return to work is going:
+    .dynamic-text(style="font-size: 11.5px; white-space: pre-wrap; line-height: 1.4; min-height: 8mm;")= data.returnComments
+
+  //- Expected return date
+  .pdf-line-field-group(style="margin-bottom: 4mm;")
+    span I expect to return to work on:
+    +inlineLine(formatDate(data.expectedReturnDate), "Date", "width: 60mm;")
+
+  //- RTW concerns box
+  .pdf-box-section
+    .pdf-box-section-label I have the following concerns about returning to work:
+    .dynamic-text(style="font-size: 11.5px; white-space: pre-wrap; line-height: 1.4; min-height: 14mm;")= data.returnConcerns
+
+  //- Contact info row
+  .pdf-line-field-group(style="margin-bottom: 6mm;")
+    span I was most recently in contact with:
+    +inlineLine(data.employerContactName, "(Name of employer contact)", "width: 50mm;")
+    span(style="margin-left: 4mm;") on
+    +inlineLine(formatDate(data.employerContactDate), "Date", "width: 35mm;")
+
+  //- 2. Recovery Section
+  +sectionTitle("Recovery")
+  .pdf-box-section
+    .pdf-box-section-label Select one:
+    div(style="display: flex; flex-direction: row; justify-content: flex-start; gap: 8mm; align-items: center; margin-top: 1mm; margin-bottom: 3.5mm;")
+      +checkboxRow("I have not fully recovered from my workplace injury.", data.recoveredStatus === 'not_fully')
+      +checkboxRow("I have fully recovered from my workplace injury.", data.recoveredStatus === 'fully')
+    .pdf-box-section-label(style="margin-bottom: 1mm;") I have provided the following comments about my recovery:
+    .dynamic-text(style="font-size: 11px; white-space: pre-wrap; line-height: 1.35; min-height: 10mm;")= data.recoveryComments
+
+  //- Hard Page Break Marker (Matches PDF layout where page 2 starts with Pain Scale)
+  .page-break-marker
+
+  //- Pain Scale Rating
+  +painScale(data.painValue)
+
+  //- 3. Medical Treatment Section
+  +sectionTitle("Medical Treatment")
+
+  //- Treatment Box
+  .pdf-box-section
+    .pdf-box-section-label Select one:
+    div(style="display: flex; flex-direction: row; justify-content: flex-start; gap: 6mm; align-items: flex-start; margin-top: 1.5mm; margin-bottom: 3.5mm;")
+      .pdf-checkbox-row(style="flex: 1; align-items: flex-start;")
+        .pdf-custom-checkbox(class=(data.continuingTreatment === 'not_continuing') ? 'checked' : '' style="margin-top: 1px;")
+        div(style="line-height: 1.2;") I am not continuing to receive medical treatment for my workplace injury.
+      .pdf-checkbox-row(style="flex: 1.2; align-items: flex-start;")
+        .pdf-custom-checkbox(class=(data.continuingTreatment === 'continuing') ? 'checked' : '' style="margin-top: 1px;")
+        div(style="line-height: 1.2; width: 100%;")
+          .pdf-line-field-group(style="height: auto; align-items: flex-end; margin-top: 0;")
+            span(style="white-space: nowrap;") I am continuing to receive medical treatment for my workplace injury from:
+            span.pdf-inline-line(style="flex: 1; min-width: 25mm; text-align: left; padding-left: 2mm;")
+              if data.continuingProviderType
+                span.dynamic-text= data.continuingProviderType
+              else
+                span &nbsp;
+              span.pdf-inline-line-label(style="bottom: -3.5mm;") (Medical Provider Type)
+    
+    div(style="font-size: 11px; line-height: 1.8; margin-top: 4mm; padding-left: 4mm;")
+      .pdf-line-field-group
+        span My last medical treatment was
+        +inlineLine(formatDate(data.lastTreatmentDate), "Date", "width: 35mm;")
+        span from
+        span.pdf-inline-line(style="flex: 1; text-align: left; padding-left: 2mm;")
+          if data.lastTreatmentProvider
+            span.dynamic-text= data.lastTreatmentProvider
+          else
+            span &nbsp;
+          span.pdf-inline-line-label (Medical Provider Name)
+      .pdf-line-field-group(style="margin-top: 3.5mm;")
+        span My next medical treatment is
+        +inlineLine(formatDate(data.nextTreatmentDate), "Date", "width: 35mm;")
+        span from
+        span.pdf-inline-line(style="flex: 1; text-align: left; padding-left: 2mm;")
+          if data.nextTreatmentProvider
+            span.dynamic-text= data.nextTreatmentProvider
+          else
+            span &nbsp;
+          span.pdf-inline-line-label (Medical Provider Name)
+      .pdf-line-field-group(style="margin-top: 3.5mm;")
+        span I am attending a Chiropractor or Physiotherapist
+        +inlineLine(data.chiropractorPhysioFrequency, "(Frequency)", "width: 60mm;")
+
+  //- Medication Box
+  .pdf-box-section
+    .pdf-box-section-label Select one:
+    div(style="display: flex; flex-direction: row; justify-content: flex-start; gap: 8mm; align-items: flex-start; margin-top: 1.5mm;")
+      .pdf-checkbox-row(style="flex: 1; align-items: flex-start;")
+        .pdf-custom-checkbox(class=(data.medicationStatus === 'not_taking') ? 'checked' : '' style="margin-top: 1px;")
+        div(style="line-height: 1.2;") I am not taking medication for my workplace injury.
+      .pdf-checkbox-row(style="flex: 1.2; align-items: flex-start;")
+        .pdf-custom-checkbox(class=(data.medicationStatus === 'taking') ? 'checked' : '' style="margin-top: 1px;")
+        div(style="line-height: 1.2; width: 100%;")
+          .pdf-line-field-group(style="height: auto; align-items: flex-end; margin-top: 0;")
+            span(style="white-space: nowrap;") I am taking medication for my workplace injury:
+            span.pdf-inline-line(style="flex: 1; min-width: 25mm; text-align: left; padding-left: 2mm;")
+              if data.medicationName
+                span.dynamic-text= data.medicationName
+              else
+                span &nbsp;
+              span.pdf-inline-line-label(style="bottom: -3.5mm;") (Name of prescribed medication)
+
+  //- Exercises Box
+  .pdf-box-section
+    .pdf-box-section-label Select one:
+    div(style="display: flex; flex-direction: row; justify-content: flex-start; gap: 8mm; align-items: center; margin-top: 1mm; margin-bottom: 3.5mm;")
+      +checkboxRow("I am not doing home exercises for my workplace injury.", data.exercisesStatus === 'not_doing')
+      +checkboxRow("I am doing home exercises for my workplace injury.", data.exercisesStatus === 'doing')
+    .pdf-box-section-label(style="margin-bottom: 1mm;") List the exercises you are doing:
+    .dynamic-text(style="font-size: 11px; white-space: pre-wrap; line-height: 1.4; min-height: 12mm;")= data.exercisesList
+
+  //- 4. Other Information Section
+  +sectionTitle("Other Information")
+  .pdf-box-section
+    .pdf-box-section-label(style="margin-bottom: 2mm;") I would like to provide the following additional information about my claim/injury:
+    .dynamic-text(style="font-size: 11px; white-space: pre-wrap; line-height: 1.4; min-height: 16mm;")= data.additionalComments
+
+  //- Hard Page Break Marker (Matches PDF layout where Page 3 holds Declaration)
+  .page-break-marker
+
+  //- 5. Declaration Section
+  +sectionTitle("Declaration")
+  .pdf-box-section(style="border: none; padding: 0;")
+    .pdf-checkbox-row(style="align-items: flex-start; margin-bottom: 3mm;")
+      .pdf-custom-checkbox(class=data.certifyChecked ? 'checked' : '' style="margin-top: 1px;")
+      div(style="font-size: 9.5px; line-height: 1.35; text-align: justify;")
+        | I certify that the information given on this form is true, correct and complete to the best of my knowledge. I agree to notify the Workers Compensation Board of Manitoba (WCB) immediately once I return to any form of work and/or employment, whether paid or unpaid, or if my workplace duties change.
+    .pdf-checkbox-row(style="align-items: flex-start;")
+      .pdf-custom-checkbox(class=data.privacyChecked ? 'checked' : '' style="margin-top: 1px;")
+      div(style="font-size: 9.5px; line-height: 1.35;")
+        | I understand that the 
+        a(href="#" style="color: #0060a9; text-decoration: underline; font-weight: 600;") Privacy Notice
+        |  applies to the personal information collected in this document.

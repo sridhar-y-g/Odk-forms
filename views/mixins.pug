@@ -1,0 +1,74 @@
+//- WCB Manitoba Reusable Form Mixins
+
+//- Form Header Mixin
+mixin formHeader(title, claimNo, docTypeBox)
+  .pdf-header
+    .pdf-header-left
+      img.wcb-logo-img(src="/Screenshot%202026-07-07%20143952.png" alt="WCB Manitoba Logo")
+      .pdf-header-address
+        | 333 Broadway
+        br
+        | Winnipeg, MB R3C 4W3
+        br
+        | Phone: (204) 954-4321
+        br
+        | Toll Free: 1-855-954-4321
+        br
+        | wcb.mb.ca
+    .pdf-header-right
+      h1!= title
+      .pdf-header-boxes
+        .claim-box Claim No. #{claimNo || '________'}
+        if docTypeBox
+          .doc-type-box #{docTypeBox}
+
+//- Form Footer Mixin
+mixin formFooter(appId, submittedDate)
+  .pdf-footer
+    .pdf-footer-left Worker App ID: #{appId || '______'}
+    .pdf-footer-right
+      | Submitted: #{submittedDate || '__________________'} / Page 
+      span.page-num X
+      |  of 
+      span.total-pages Y
+
+//- Section Title Mixin
+mixin sectionTitle(title, note)
+  .pdf-section-title= title
+  if note
+    .section-note= note
+
+//- Custom Checkbox Row Mixin
+mixin checkboxRow(label, isChecked, styleAttr)
+  .pdf-checkbox-row(style=styleAttr)
+    .pdf-custom-checkbox(class=isChecked ? 'checked' : '')
+    div= label
+
+//- Inline Underline Line Field Mixin
+mixin inlineLine(value, labelUnder, widthStyle)
+  span.pdf-inline-line(style=widthStyle)
+    if value
+      span.dynamic-text= value
+    else
+      span(style="color: #ccc;") __________
+    if labelUnder
+      span.pdf-inline-line-label(style="bottom: -3.5mm; font-size: 8px;")= labelUnder
+
+//- Pain Scale Rating Box Mixin
+mixin painScale(painValue)
+  .pdf-pain-scale-container
+    .pdf-pain-scale-text
+      | I rate my current pain/discomfort on a scale of 1-10,
+      br
+      | where 1 is no pain and 10 is severe pain out of 10.
+    .pdf-pain-scale-checkboxes
+      .pdf-pain-checkbox-row
+        each val in [1, 2, 3, 4, 5]
+          .pdf-checkbox-row
+            .pdf-custom-checkbox(class=(painValue == val) ? 'checked' : '')
+            span= val
+      .pdf-pain-checkbox-row
+        each val in [6, 7, 8, 9, 10]
+          .pdf-checkbox-row
+            .pdf-custom-checkbox(class=(painValue == val) ? 'checked' : '')
+            span= val

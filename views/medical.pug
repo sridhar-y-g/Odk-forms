@@ -1,0 +1,199 @@
+include mixins
+
+-
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      return `${months[parseInt(parts[1], 10) - 1]} ${parseInt(parts[2], 10)}, ${parts[0]}`;
+    }
+    return dateStr;
+  }
+  function formatAmount(amount) {
+    if (!amount) return '';
+    let clean = amount.toString().trim().replace('$', '');
+    if (isNaN(clean) || clean === "") return amount;
+    return `$${parseFloat(clean).toFixed(2)}`;
+  }
+
+//- Raw unpaginated container that the JS pagination engine will process
+#raw-content-container.raw-form-container(data-doc="medical" data-worker-name=data.workerName data-claim-no=data.claimNo data-app-id=data.appId data-submitted-date=data.submittedDate)
+  
+  //- 1. Intro statement
+  .pdf-intro-statement
+    span.dynamic-text #{data.workerName || '__________________'}
+    |  requested reimbursement for the following medical and/or travel expenses:
+
+  //- 2. Prescription Drugs Table
+  .pdf-table-section(data-title="Prescription Drugs")
+    table.pdf-table
+      thead
+        tr
+          th(style="width: 25%;") Drug Name
+          th(style="width: 20%;") Prescription Date
+          th(style="width: 20%;") Date Purchased
+          th(style="width: 22%;") Healthcare Provider Name
+          th(style="width: 13%;") Paid Amount
+      tbody
+        if data.prescriptionDrugs && data.prescriptionDrugs.length > 0
+          each row in data.prescriptionDrugs
+            tr
+              td.dynamic-text= row.name
+              td.dynamic-text= formatDate(row.rxDate)
+              td.dynamic-text= formatDate(row.purchasedDate)
+              td.dynamic-text= row.provider
+              td.dynamic-text= formatAmount(row.amount)
+        else
+          tr
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+
+  //- 3. OTC Drugs Table
+  .pdf-table-section(data-title="Over-the-Counter Drugs")
+    table.pdf-table
+      thead
+        tr
+          th(style="width: 25%;") Drug Name
+          th(style="width: 20%;") Date Purchased
+          th(style="width: 13%;") Paid Amount
+          th(style="width: 22%;") Seller's Name
+          th(style="width: 20%;") Reason for Purchasing
+      tbody
+        if data.otcDrugs && data.otcDrugs.length > 0
+          each row in data.otcDrugs
+            tr
+              td.dynamic-text= row.name
+              td.dynamic-text= formatDate(row.purchasedDate)
+              td.dynamic-text= formatAmount(row.amount)
+              td.dynamic-text= row.seller
+              td.dynamic-text= row.reason
+        else
+          tr
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+
+  //- 4. Medical Supplies Table
+  .pdf-table-section(data-title="Bandages, Braces or Other Medical Supplies")
+    table.pdf-table
+      thead
+        tr
+          th(style="width: 22%;") Item Purchased
+          th(style="width: 18%;") Date Purchased
+          th(style="width: 15%;") Was this Prescribed?
+          th(style="width: 18%;") Healthcare Provider Name
+          th(style="width: 12%;") Paid Amount
+          th(style="width: 15%;") Seller's Name
+      tbody
+        if data.supplies && data.supplies.length > 0
+          each row in data.supplies
+            tr
+              td.dynamic-text= row.item
+              td.dynamic-text= formatDate(row.purchasedDate)
+              td.dynamic-text= row.prescribed
+              td.dynamic-text= row.provider
+              td.dynamic-text= formatAmount(row.amount)
+              td.dynamic-text= row.seller
+        else
+          tr
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+
+  //- 5. Parking Table
+  .pdf-table-section(data-title="Parking for Medical Appointments")
+    table.pdf-table
+      thead
+        tr
+          th(style="width: 44%;") Address of Healthcare Provider/Medical Facility
+          th(style="width: 18%;") Date
+          th(style="width: 12%;") Paid Amount
+          th(style="width: 13%;") Meter Used?
+          th(style="width: 13%;") Meter Number
+      tbody
+        if data.parking && data.parking.length > 0
+          each row in data.parking
+            tr
+              td.dynamic-text= row.address
+              td.dynamic-text= formatDate(row.date)
+              td.dynamic-text= formatAmount(row.amount)
+              td.dynamic-text= row.meterUsed
+              td.dynamic-text= row.meterNo
+        else
+          tr
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+
+  //- 6. Mileage Table
+  .pdf-table-section(data-title="Mileage to Medical Appointments" data-note="The WCB will generally reimburse only those transportation costs which are in excess of costs that would be incurred by the worker while travelling to and from work.")
+    table.pdf-table
+      thead
+        tr
+          th(style="width: 18%;") Appointment Date
+          th(style="width: 36%;") Address of Healthcare Provider/Medical Facility
+          th(style="width: 33%;") Address of Workplace
+          th(style="width: 13%;") Number of km (Round Trip)
+      tbody
+        if data.mileage && data.mileage.length > 0
+          each row in data.mileage
+            tr
+              td.dynamic-text= formatDate(row.date)
+              td.dynamic-text= row.facilityAddress
+              td.dynamic-text= row.workplaceAddress
+              td.dynamic-text= row.km ? `${row.km} km` : ''
+        else
+          tr
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+
+  //- Force Page Break Marker before Bus or Taxi Fare (matches WCB layout)
+  .page-break-marker
+
+  //- 7. Bus/Taxi Table
+  .pdf-table-section(data-title="Bus or Taxi Fare for Medical Appointments" data-note="*Note: Pre-approval is required from your WCB representative to claim taxi fare(s).")
+    table.pdf-table
+      thead
+        tr
+          th(style="width: 18%;") Appointment Date
+          th(style="width: 25%;") Address of Starting Point
+          th(style="width: 31%;") Address of Healthcare Provider/Medical Facility
+          th(style="width: 14%;") Bus or Taxi (indicate one)
+          th(style="width: 12%;") Total Fare Paid
+      tbody
+        if data.busTaxi && data.busTaxi.length > 0
+          each row in data.busTaxi
+            tr
+              td.dynamic-text= formatDate(row.date)
+              td.dynamic-text= row.startingAddress
+              td.dynamic-text= row.facilityAddress
+              td.dynamic-text= row.type
+              td.dynamic-text= formatAmount(row.fare)
+        else
+          tr
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+
+  //- 8. Consent Checkbox (Privacy Notice)
+  .pdf-checkbox-row(style="margin-top: 6mm; font-size: 12px;")
+    .pdf-custom-checkbox(class=data.privacyChecked ? 'checked' : '')
+    div
+      | I understand that the 
+      a(href="#" style="color: #0060a9; text-decoration: underline; font-weight: 600;") Privacy Notice
+      |  applies to the personal information collected in this document.

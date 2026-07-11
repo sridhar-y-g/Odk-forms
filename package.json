@@ -1,0 +1,13 @@
+{
+  "name": "wcb-manitoba-form-generator",
+  "version": "1.0.0",
+  "description": "WCB Manitoba Form Generator with Pug, Express, and Client-side A4 Pagination Engine",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "pug": "^3.0.2"
+  }
+}
