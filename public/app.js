@@ -41,35 +41,62 @@ function paginateForm() {
     const page = document.createElement('div');
     page.className = 'pdf-page';
     
-    // Header content mimicking WCB Manitoba standard forms
-    const headerHTML = `
-      <div class="pdf-header">
-        <div class="pdf-header-left">
-          <img src="/Screenshot%202026-07-07%20143952.png" class="wcb-logo-img" alt="WCB Manitoba Logo">
-          <div class="pdf-header-address">
-            333 Broadway<br>
-            Winnipeg, MB R3C 4W3<br>
-            Phone: (204) 954-4321<br>
-            Toll Free: 1-855-954-4321<br>
-            wcb.mb.ca
+    let headerHTML = '';
+    
+    if (docType === 'criminal') {
+      headerHTML = `
+        <div class="pdf-header">
+          <div class="pdf-header-left" style="flex: 1.2;">
+            <div style="font-weight: 700; font-size: 10px; margin-bottom: 1.5mm; font-family: var(--font-main);">MANITOBA FAMILIES - CRIMINAL RISK ASSESSMENT UNIT</div>
+            <div class="pdf-header-address" style="font-size: 8px;">
+              Child Protection Branch<br>
+              201 - 114 Garry Street<br>
+              Winnipeg, Manitoba R3C 4V5
+            </div>
+          </div>
+          <div class="pdf-header-right" style="flex: 1; align-items: flex-end;">
+            <h1 style="font-size: 13.5px; font-weight: 700; text-align: right; line-height: 1.2; margin-bottom: 1.5mm; font-family: var(--font-title);">CRIMINAL RISK ASSESSMENT<br>REQUEST</h1>
+            <div style="font-size: 8px; color: #555; text-align: right;">Revision date: 2025-01-10</div>
           </div>
         </div>
-        <div class="pdf-header-right">
-          <h1>${docType === 'medical' ? 'Medical & Travel Expense<br>Request' : 'Worker Progress Report'}</h1>
-          <div class="pdf-header-boxes">
-            <div class="claim-box">Claim No. ${claimNo || '________'}</div>
-            ${docType === 'worker' ? '<div class="doc-type-box">WP</div>' : ''}
+        <div class="pdf-body"></div>
+        <div class="pdf-footer">
+          <div class="pdf-footer-left">Criminal Risk Assessment Request</div>
+          <div class="pdf-footer-right">
+            Page <span class="page-num">${pageNum}</span> of <span class="total-pages">Y</span>
           </div>
         </div>
-      </div>
-      <div class="pdf-body"></div>
-      <div class="pdf-footer">
-        <div class="pdf-footer-left">Worker App ID: ${appId || '______'}</div>
-        <div class="pdf-footer-right">
-          Submitted: ${submittedDate || '__________________'} / Page <span class="page-num">${pageNum}</span> of <span class="total-pages">Y</span>
+      `;
+    } else {
+      headerHTML = `
+        <div class="pdf-header">
+          <div class="pdf-header-left">
+            <img src="/Screenshot%202026-07-07%20143952.png" class="wcb-logo-img" alt="WCB Manitoba Logo">
+            <div class="pdf-header-address">
+              333 Broadway<br>
+              Winnipeg, MB R3C 4W3<br>
+              Phone: (204) 954-4321<br>
+              Toll Free: 1-855-954-4321<br>
+              wcb.mb.ca
+            </div>
+          </div>
+          <div class="pdf-header-right">
+            <h1>${docType === 'medical' ? 'Medical & Travel Expense<br>Request' : 'Worker Progress Report'}</h1>
+            <div class="pdf-header-boxes">
+              <div class="claim-box">Claim No. ${claimNo || '________'}</div>
+              ${docType === 'worker' ? '<div class="doc-type-box">WP</div>' : ''}
+            </div>
+          </div>
         </div>
-      </div>
-    `;
+        <div class="pdf-body"></div>
+        <div class="pdf-footer">
+          <div class="pdf-footer-left">Worker App ID: ${appId || '______'}</div>
+          <div class="pdf-footer-right">
+            Submitted: ${submittedDate || '__________________'} / Page <span class="page-num">${pageNum}</span> of <span class="total-pages">Y</span>
+          </div>
+        </div>
+      `;
+    }
     
     page.innerHTML = headerHTML;
     viewer.appendChild(page);

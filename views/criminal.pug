@@ -1,0 +1,181 @@
+include mixins
+
+-
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      return `${months[parseInt(parts[1], 10) - 1]} ${parseInt(parts[2], 10)}, ${parts[0]}`;
+    }
+    return dateStr;
+  }
+  function formatDob(dateStr) {
+    if (!dateStr) return { day: '', month: '', year: '' };
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      return { day: parts[2], month: parts[1], year: parts[0] };
+    }
+    return { day: '', month: '', year: '' };
+  }
+
+#raw-content-container.raw-form-container(data-doc="criminal" data-worker-name=data.workerName data-claim-no=data.claimNo data-app-id=data.appId data-submitted-date=data.submittedDate)
+  
+  //- Consent Section Title
+  +sectionTitle("CONSENT FOR CRIMINAL RISK ASSESSMENT AND RELEASE OF INFORMATION")
+
+  //- Consent statement
+  .pdf-box-section(style="margin-bottom: 4mm;")
+    p(style="font-size: 10px; line-height: 1.4; text-align: justify; color: #111; margin-bottom: 4mm;")
+      | As a person who has, or may have, care, custody, control or charge of a child in receipt of services under 
+      strong The Child and Family Services Act
+      | , I authorize the Criminal Risk Assessment Unit of Manitoba Families’ Child Protection Branch ("CRAU") to conduct enquiries of the Winnipeg Police Service (WPS), the RCMP and other law enforcement agencies necessary to assess the risk that I may endanger the life, health or emotional wellbeing of a child. I understand that this information is requested by 
+      span.dynamic-text #{data.submittingAgency || '______________________'}
+      |  for the purposes of, and in accordance with, s. 18.4(1.1) of 
+      em The Child and Family Services Act
+      | , and may include a criminal record, criminal and Provincial Act convictions, orders or charges, other involvement/contact with law enforcement (including non-conviction information) or other information. I authorize the disclosure of said information to CRAU and an authorized Child and Family Services Agency designate or designates. I also authorize the disclosure of the personal identifying information set out below to CRAU, the WPS, RCMP and other law enforcement agencies for the purpose of completing a Criminal Risk Assessment. I understand that the results of this Criminal Risk Assessment are confidential, and may not be provided to me, but may be disclosed in accordance with s.76 of the Child and Family Services Act.
+
+    //- Consent signatures and dates
+    .pdf-line-field-group(style="margin-bottom: 4mm; display: flex; justify-content: space-between;")
+      div(style="flex: 1; display: flex; gap: 2mm; align-items: flex-end;")
+        +checkboxRow("Consented", data.consentGiven === true)
+        span(style="margin-left: 2mm;") Date:
+        +inlineLine(formatDate(data.consentDate), "Date", "width: 40mm;")
+      div(style="flex: 1.2; display: flex; gap: 2mm; align-items: flex-end; margin-left: 4mm;")
+        span Signature of person being assessed:
+        +inlineLine(data.consentGiven ? data.workerName : '', "(Signature of subject)", "width: 50mm;")
+
+    .pdf-line-field-group(style="margin-bottom: 2mm; display: flex; justify-content: space-between;")
+      div(style="flex: 1; display: flex; gap: 2mm; align-items: flex-end;")
+        +checkboxRow("Unconsented", data.consentGiven === false)
+      div(style="flex: 1.2; display: flex; gap: 2mm; align-items: flex-end; margin-left: 4mm;")
+        span Witness (if consenting):
+        +inlineLine(data.consentGiven ? data.witnessName : '', "(Signature of witness)", "width: 55mm;")
+
+  //- Subject Demographics
+  +sectionTitle("PLEASE PRINT CLEARLY - SUBJECT DEMOGRAPHICS")
+  
+  .pdf-box-section(style="margin-bottom: 4mm;")
+    .pdf-line-field-group(style="margin-bottom: 4mm;")
+      span 1. FIRST NAME:
+      +inlineLine(data.firstName, "", "flex: 1.2; text-align: left; padding-left: 2mm;")
+      span(style="margin-left: 4mm;") 2. SECOND NAME:
+      +inlineLine(data.secondName, "", "flex: 1; text-align: left; padding-left: 2mm;")
+      
+    .pdf-line-field-group(style="margin-bottom: 4mm;")
+      span 3. LAST NAME:
+      +inlineLine(data.lastName, "", "flex: 1; text-align: left; padding-left: 2mm;")
+
+    .pdf-line-field-group(style="margin-bottom: 4mm; display: flex; align-items: center;")
+      span 4. DATE OF BIRTH:
+      - const dobInfo = formatDob(data.dob)
+      span(style="margin-left: 2mm; font-size: 10px; color: #555;") Day:
+      +inlineLine(dobInfo.day, "", "width: 14mm;")
+      span(style="margin-left: 2mm; font-size: 10px; color: #555;") Month:
+      +inlineLine(dobInfo.month, "", "width: 14mm;")
+      span(style="margin-left: 2mm; font-size: 10px; color: #555;") Year:
+      +inlineLine(dobInfo.year, "", "width: 20mm;")
+      
+      span(style="margin-left: 10mm;") 5. GENDER:
+      +checkboxRow("MALE", data.gender === 'MALE', "margin-left: 2mm; font-size: 11px;")
+      +checkboxRow("FEMALE", data.gender === 'FEMALE', "margin-left: 4mm; font-size: 11px;")
+
+    .pdf-line-field-group(style="margin-bottom: 4mm;")
+      span 6. OTHER LAST NAMES USED:
+      +inlineLine(data.otherLastNames, "", "flex: 1; text-align: left; padding-left: 2mm;")
+      
+    .pdf-line-field-group(style="margin-bottom: 4mm;")
+      span 7. OTHER FIRST NAMES USED/ALSO GOES BY:
+      +inlineLine(data.otherFirstNames, "", "flex: 1; text-align: left; padding-left: 2mm;")
+
+    .pdf-line-field-group(style="margin-bottom: 4mm;")
+      span 8. CURRENT ADDRESS (include postal code):
+      +inlineLine(data.currentAddress, "", "flex: 1; text-align: left; padding-left: 2mm;")
+
+    .pdf-line-field-group(style="margin-bottom: 2mm;")
+      span 9. CURRENT PH#s:
+      +inlineLine(data.currentPhones, "", "flex: 1.2; text-align: left; padding-left: 2mm;")
+      span(style="margin-left: 4mm;") 10. City/Province/Country of Birth:
+      +inlineLine(data.birthPlace, "", "flex: 1; text-align: left; padding-left: 2mm;")
+
+  //- Identification Section
+  +sectionTitle("IDENTIFICATION VERIFICATION")
+  .pdf-box-section(style="margin-bottom: 2mm;")
+    p(style="font-size: 9.5px; font-weight: 700; color: #000; margin-bottom: 3mm;")
+      | *PLEASE NOTE: Subject's name must be identified with TWO PIECES OF IDENTIFICATION (MB D/L & photo ID is preferable):
+    
+    .pdf-checkbox-grid(style="margin-bottom: 4mm;")
+      +checkboxRow("Birth Certificate", data.idBirthCert === true, "width: 45%;")
+      +checkboxRow("Social Insurance Card", data.idSin === true, "width: 45%;")
+      +checkboxRow("Manitoba Health Card", data.idHealthCard === true, "width: 45%;")
+      +checkboxRow("Treaty Card", data.idTreaty === true, "width: 45%;")
+
+    .pdf-line-field-group(style="margin-bottom: 4mm; display: flex; align-items: flex-end;")
+      +checkboxRow("Other (specify ID):", data.idOther === true || !!data.idOtherSpecify, "margin-right: 1mm;")
+      +inlineLine(data.idOtherSpecify, "", "flex: 1; text-align: left; padding-left: 2mm;")
+
+    .pdf-line-field-group(style="margin-bottom: 2mm; display: flex; align-items: flex-end;")
+      +checkboxRow("MB Driver's License with Photo - licence number (section 4d on licence):", data.idMbDl === true || !!data.idMbDlNumber, "margin-right: 1mm;")
+      +inlineLine(data.idMbDlNumber, "", "flex: 1; text-align: left; padding-left: 2mm;")
+
+  //- Page Break Marker
+  .page-break-marker
+
+  //- Page 2 Header info
+  .pdf-line-field-group(style="margin-top: 2mm; margin-bottom: 4mm;")
+    strong NAME OF PERSON BEING ASSESSED:
+    +inlineLine(data.workerName, "", "flex: 1; text-align: left; padding-left: 2mm; font-weight: 700;")
+  p(style="font-size: 9px; font-style: italic; color: #444; margin-top: -3.5mm; margin-bottom: 4mm; padding-left: 48mm;") *Must match information on page 1
+
+  //- Disclaimer block
+  .pdf-box-section(style="margin-bottom: 4mm;")
+    strong(style="font-size: 9.5px; display: block; margin-bottom: 2mm;") IT IS IMPORTANT THAT THE CFS AGENCY DESIGNATE READS AND UNDERSTANDS THE FOLLOWING:
+    p(style="font-size: 9px; line-height: 1.35; text-align: justify; color: #222;")
+      | The identifying information supplied on page 1 will be researched through the Canadian Police Information Centre (CPIC) and Winnipeg Police Service Records Management System (NICHE). The research will NOT include a vulnerable sector search or information in respect of pardons, which information may impact the results of a risk assessment. Criminal Convictions are strictly confidential and cannot be shared without written authorization of the person involved. Personal Information is governed under Section 8 of the Privacy Act (Federal Statute). PLEASE NOTE that record information is based on NAME AND DATE OF BIRTH SEARCH ONLY and does not necessarily indicate subject involvement. Verification can only be provided through the submission of fingerprints to the local law enforcement agency for the area in which the person being assessed resides. In the case of dispute regarding the identity of the person being assessed, that person is advised to attend any RCMP Detachment; Winnipeg Police Service, 245 Smith Street, Winnipeg, Manitoba; Brandon Police Service, 1340 10th Street, Brandon, Manitoba; or local Police Agency. A fee for service is required.
+
+  //- CFS Agency Details
+  +sectionTitle("CFS AGENCY REQUEST DETAILS")
+  p(style="font-size: 9px; font-weight: 700; color: #d32f2f; margin-top: -1.5mm; margin-bottom: 3mm;") NOTE – SECTIONS MARKED WITH AN ASTERISK (*) ARE REQUIRED
+
+  .pdf-box-section(style="margin-bottom: 4mm;")
+    .pdf-line-field-group(style="margin-bottom: 4mm;")
+      strong *NAME OF AGENCY SUBMITTING REQUEST:
+      +inlineLine(data.submittingAgency, "", "flex: 1; text-align: left; padding-left: 2mm;")
+
+    //- Reason Section
+    .pdf-box-section(style="margin-bottom: 4mm; border: 1px dashed #bbb; padding: 2mm 3mm;")
+      strong(style="font-size: 10px; display: block; margin-bottom: 2mm;") *REASON FOR RISK ASSESSMENT:
+      
+      div(style="display: flex; flex-direction: row; justify-content: space-between;")
+        div(style="flex: 1;")
+          strong(style="font-size: 9px; text-decoration: underline; display: block; margin-bottom: 1.5mm;") With or Without Consent:
+          +checkboxRow("Child Protection Concerns", data.reasonRiskAssessment === 'child_protection')
+        div(style="flex: 1.2; border-left: 1px solid #ddd; padding-left: 4mm;")
+          strong(style="font-size: 9px; text-decoration: underline; display: block; margin-bottom: 1.5mm;") Must have consent:
+          +checkboxRow("Place of Safety", data.reasonRiskAssessment === 'place_of_safety', "margin-bottom: 1.5mm;")
+          +checkboxRow("Kinship or Customary Care Agreement", data.reasonRiskAssessment === 'kinship_customary')
+
+    .pdf-line-field-group(style="margin-bottom: 4mm;")
+      strong *ASSIGNED WORKER:
+      +inlineLine(data.assignedWorker, "", "flex: 1; text-align: left; padding-left: 2mm;")
+      strong(style="margin-left: 4mm;") DATE OF LAST CRIMINAL RISK ASSESSMENT (if known):
+      +inlineLine(formatDate(data.lastAssessmentDate), "", "width: 40mm;")
+
+    .pdf-line-field-group(style="margin-bottom: 4mm;")
+      strong *SUBMITTING DESIGNATE:
+      +inlineLine(data.submittingDesignate, "", "flex: 1; text-align: left; padding-left: 2mm;")
+
+    .pdf-line-field-group(style="margin-bottom: 4mm;")
+      strong *DESIGNATE PH#:
+      +inlineLine(data.designatePhone, "", "flex: 1; text-align: left; padding-left: 2mm;")
+      strong(style="margin-left: 4mm;") *DESIGNATE EMAIL#:
+      +inlineLine(data.designateEmail, "", "flex: 1.5; text-align: left; padding-left: 2mm;")
+
+    .pdf-line-field-group(style="margin-bottom: 2mm;")
+      strong DESIGNATE FAX#
+      +inlineLine(data.designateFax, "", "flex: 1; text-align: left; padding-left: 2mm;")
+      strong(style="margin-left: 4mm;") *REQUEST DATE:
+      +inlineLine(formatDate(data.requestDate), "", "width: 45mm;")
+
+  p(style="font-size: 9.5px; font-weight: 600; line-height: 1.35; text-align: center; color: #444; border-top: 1px dashed #ccc; padding-top: 3mm; margin-top: 4mm;")
+    | NOTE: The assessment completed by the Criminal Risk Assessment Unit of the Department of Families Child Protection Branch does not replace a criminal records check.

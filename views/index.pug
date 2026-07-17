@@ -13,10 +13,11 @@ block content
 
       //- Document Switcher
       .control-group
-        label.control-label Select WCB Form
+        label.control-label Select Form Template
         .tab-buttons
           a#btn-doc-medical.tab-button(href=`?doc=medical&dataset=${dataset}` class=(doc === 'medical' ? 'active' : '')) 1. Medical & Travel
           a#btn-doc-worker.tab-button(href=`?doc=worker&dataset=${dataset}` class=(doc === 'worker' ? 'active' : '')) 2. Worker Progress
+          a#btn-doc-criminal.tab-button(href=`?doc=criminal&dataset=${dataset}` class=(doc === 'criminal' ? 'active' : '')) 3. Criminal Risk
 
       //- Dataset Switcher
       .control-group
@@ -40,7 +41,7 @@ block content
         div(style="font-size: 13px; line-height: 1.5; color: var(--text-muted); display: flex; flex-direction: column; gap: 10px;")
           p
             strong Form Type: 
-            span(style="color: var(--text-light)")= (doc === 'medical') ? 'Medical & Travel Expense' : 'Worker Progress Report'
+            span(style="color: var(--text-light)")= (doc === 'medical') ? 'Medical & Travel Expense' : ((doc === 'worker') ? 'Worker Progress Report' : 'Criminal Risk Assessment Request')
           p
             strong Loaded Dataset: 
             span(style="color: var(--text-light)")= (dataset === '1') ? 'Dataset 1 (Standard claims/updates)' : 'Dataset 2 (Large lists/overflowing text blocks)'
@@ -76,3 +77,5 @@ block content
           include medical.pug
         else if doc === 'worker'
           include worker.pug
+        else if doc === 'criminal'
+          include criminal.pug

@@ -23,8 +23,8 @@ app.get('/', (req, res) => {
   const dataset = req.query.dataset || '1';
 
   // Basic validation for queries
-  if (doc !== 'medical' && doc !== 'worker') {
-    return res.status(400).send('Invalid document type. Use ?doc=medical or ?doc=worker');
+  if (doc !== 'medical' && doc !== 'worker' && doc !== 'criminal') {
+    return res.status(400).send('Invalid document type. Use ?doc=medical, ?doc=worker or ?doc=criminal');
   }
   
   if (dataset !== '1' && dataset !== '2') {

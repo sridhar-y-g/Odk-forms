@@ -75,7 +75,7 @@ This project has been updated to use **Pug templates**, **Express.js**, and simu
 
 ## 🖨️ How to Export to PDF Correctly
 
-To get pixel-perfect WCB PDF documents from the web application:
+To get pixel-perfect PDF documents from the web application:
 1.  Click the **Print & Export to PDF** button in the sidebar (or press `Ctrl + P`).
 2.  In the browser's print preview dialog, configure these settings:
     *   **Destination:** Save as PDF / Microsoft Print to PDF.
@@ -86,3 +86,56 @@ To get pixel-perfect WCB PDF documents from the web application:
     *   **Scale:** Default (100%).
     *   **Options:** Uncheck "Headers and footers" (to hide browser URL/dates) and check "Background graphics" (to render form backgrounds and checkmarks).
 3.  Click **Save** or **Print**.
+
+---
+
+## 📋 Assignment 3: ODK XLSForm & Pug PDF Template for Criminal Risk Assessment
+
+This project has been extended to support the **Criminal Risk Assessment Request** form, using an ODK XLSForm structure and generating a matching high-fidelity Pug template with A4 client-side pagination.
+
+### 📁 Files Added
+*   `Criminal Risk Assessment Request.xlsx` (in root/odk): The complete ODK XLSForm spreadsheet mapping the PDF structure.
+*   `views/criminal.pug`: High-fidelity layout template replicating the Criminal Risk Assessment form.
+*   Updated `data/datasets.js`, `server.js`, `views/index.pug`, `public/app.js`, and `public/style.css` to integrate the form and pagination.
+
+---
+
+### 🧠 AI Model Selection & Rationale
+*   **Model Chosen:** **Gemini 3.5 Flash** (via Antigravity assistant)
+*   **Why:** Flash is a reasoning-capable model that excels at processing structural document requirements (like PDF fields and ODK XLSForm rows) and translating them into code formats (like Pug templates, JS datasets, and styling structures). Its high accuracy, speed, and contextual awareness allow for rapid, correct generation of complex hierarchical layouts.
+
+#### Pros of using AI for this task:
+1.  **Speed of Boilerplate:** Instantly structures nested HTML elements, input fields, tables, and inline lines.
+2.  **Structural Mapping:** Seamlessly maps Excel sheet fields (`survey`, `choices`) directly to Javascript dataset schemas and Pug variables.
+3.  **Mock Data Generation:** Quickly generates edge-case datasets (e.g., overflow text, nested fields) to test limits.
+
+#### Cons of using AI for this task:
+1.  **Visual Alignment Refinements:** Standard text LLMs lack real-time visual output, requiring human-in-the-loop CSS tuning for pixel-perfection.
+2.  **Logic Constraints:** AI might write static styles where dynamic margins/paddings are necessary for client-side pagination to work correctly under overflow scenarios.
+
+---
+
+### 📝 Prompt History Used to Generate Pug Template
+
+Here are the key prompts executed in the session to construct and integrate the Pug template:
+
+#### Prompt 1: Inspect PDF Structure & Fields
+> "Develop an Excel-based ODK XLSForm representing the fields in 'Criminal Risk Assessment Request.pdf'. Identify all inputs, checkboxes, consent texts, witness names, demographics, ID documents, and submission details. Parse this data to outline the spreadsheet columns."
+
+#### Prompt 2: Write Pug Layout from XLSForm
+> "Create a Pug template named `criminal.pug` that maps all the logical fields and sections from the XLSForm. Replicate the PDF's A4 format precisely. Use standard mixins for sections, underlines, and checkbox rows. Organize it into:
+> 1. Consent declaration with signature lines.
+> 2. Demographics grid (First/Second/Last Names, DOB, Gender checkboxes, current address, etc.).
+> 3. Identification list (Birth Cert, SIN, Health Card, Treaty Card, MB Driver's License number).
+> 4. CFS Agency Request Details (Agency name, reason checkboxes, worker, designate details, request date)."
+
+#### Prompt 3: Setup Mock Datasets and Integrate Routing
+> "Extend `data/datasets.js` with standard (Dataset 1) and overflow (Dataset 2) records containing realistic data for the Criminal form. Update `server.js` and `views/index.pug` to include this form in the dashboard switcher and render it."
+
+---
+
+### 🎥 Video Presentation Details
+
+*   **Video Link:** *[Insert Loom/YouTube Video Link Here]*
+*   **Content Covered:** Selection of LLM (Gemini 3.5 Flash), rationale, pros & cons of AI, demonstrating the live web interface, switching between Dataset 1 (Normal) and Dataset 2 (Overflow), and printing to PDF.
+

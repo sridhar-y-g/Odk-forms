@@ -616,7 +616,8 @@ body {
   display: flex;
   align-items: flex-end;
   gap: 2mm;
-  height: 6mm;
+  min-height: 6mm;
+  height: auto;
 }
 
 /* Blank/Text Area Blocks */
@@ -814,4 +815,27 @@ body {
 .toggle-sidebar-btn:hover {
   background-color: var(--border-color);
 }
+
+/* --- Criminal Risk Assessment Specific Custom Styles --- */
+.pdf-page .pdf-header-left-criminal {
+  flex: 1.2;
+}
+
+.pdf-page .pdf-header-right-criminal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.pdf-page .pdf-header-right-criminal h1 {
+  font-family: var(--font-title);
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1.5mm;
+  color: #000000;
+}
+
 
