@@ -126,5 +126,5 @@ Here are the key prompts executed in the session to construct and integrate the 
 
 ## 🎥 Video Presentation Details
 
-*   **Video Link:** *[Insert Loom/YouTube Video Link Here]*
+*   **Video Link:** https://drive.google.com/file/d/1Nq1yqfG9HhzQj9SlbLulcRHb1UaAWgmJ/view?usp=drivesdk
 *   **Content Covered:** Selection of LLM (Gemini 3.5 Flash), rationale, pros & cons of AI, demonstrating the live web interface, switching between Dataset 1 (Normal) and Dataset 2 (Overflow), showing the online ODK validator test, and printing to PDF.
