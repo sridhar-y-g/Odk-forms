@@ -30,7 +30,6 @@ This repository contains the deliverables for **Assignment 3**:
 
 ```text
 ├── Criminal Risk Assessment Request.xlsx   # ODK XLSForm Spreadsheet
-├── video_script.md                          # 5-minute video presentation script
 ├── server.js                                # Express application server
 ├── package.json                             # Node package definitions
 ├── data/
